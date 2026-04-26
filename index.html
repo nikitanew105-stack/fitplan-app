@@ -1,54 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>FitPlan</title>
-  <style>
-    body { font-family: Arial; padding: 20px; }
-    input, select, button {
-      display: block;
-      margin: 10px 0;
-      padding: 12px;
-      width: 100%;
-      font-size: 16px;
-    }
-    button {
-      background: black;
-      color: white;
-      border: none;
-    }
-  </style>
+  <title>План питания</title>
 </head>
 <body>
 
 <h2>Твой план питания</h2>
 
-<input id="weight" placeholder="Вес (кг)">
-<input id="height" placeholder="Рост (см)">
+<input placeholder="Вес (кг)" />
+<br><br>
 
-<select id="goal">
+<input placeholder="Рост (см)" />
+<br><br>
+
+<select>
   <option>Похудение</option>
   <option>Набор</option>
-  <option>Поддержание</option>
 </select>
 
-<button onclick="generate()">Сформировать план</button>
+<br><br>
+
+<button onclick="generatePlan()">Сформировать план</button>
 
 <pre id="result"></pre>
 
 <script>
-async function generate() {
-  const weight = document.getElementById('weight').value;
-  const height = document.getElementById('height').value;
-  const goal = document.getElementById('goal').value;
+async function generatePlan() {
+  const inputs = document.querySelectorAll("input");
 
-  const res = await fetch('/api/generate', {
-    method: 'POST',
+  const weight = inputs[0].value;
+  const height = inputs[1].value;
+  const goal = document.querySelector("select").value;
+
+  const res = await fetch("/api/generate", {
+    method: "POST",
     body: JSON.stringify({ weight, height, goal })
   });
 
   const data = await res.json();
-  document.getElementById('result').innerText = data.text;
+
+  console.log(data);
+
+  document.getElementById("result").innerText =
+    data.result || JSON.stringify(data);
 }
 </script>
 

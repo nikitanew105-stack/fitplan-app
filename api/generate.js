@@ -7,9 +7,9 @@ export default async function handler(req, res) {
       "Authorization": "Bearer " + process.env.OPENAI_KEY,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({
-      model: "gpt-4.1-mini",
-      input: `Составь план питания на 1 день.
+body: JSON.stringify({
+  model: "gpt-4.1-mini",
+  input: `Составь план питания на 1 день.
 
 Вес: ${weight}
 Рост: ${height}
@@ -21,6 +21,7 @@ export default async function handler(req, res) {
 - Меню (завтрак, обед, ужин)
 
 Без сложных блюд.`
+}),
     }),
   });
 

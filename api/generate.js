@@ -9,7 +9,7 @@ export default async function handler(req, res) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        model: "openchat/openchat-7b",
+        model: "mistralai/mistral-7b-instruct:free",
         messages: [
           {
             role: "user",
@@ -34,35 +34,18 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    // 🔴 ВАЖНО: логируем ответ
-    console.log("OPENROUTER RESPONSE:", JSON.stringify(data));
-
-    // если ошибка от API
-    if (!response.ok) {
-      return res.status(500).json({
-        error: data
-      });
-    }
-
-    // если нет ответа модели
-    if (!data.choices || !data.choices[0]) {
-      return res.status(500).json({
-        error: "No choices in response",
-        data: data
-      });
+    // Лог ошибки (если есть)
+    if (!data.choices) {
+      console.log("ERROR FROM OPENROUTER:", data);
+      return res.status(500).json({ error: data });
     }
 
     const text = data.choices[0].message.content;
 
-    res.status(200).json({
-      text: text
-    });
+    return res.status(200).json({ result: text });
 
-  } catch (error) {
-    console.error("SERVER ERROR:", error);
-
-    res.status(500).json({
-      error: error.message
-    });
+  } catch (e) {
+    console.log("SERVER ERROR:", e);
+    return res.status(500).json({ error: e.toString() });
   }
 }

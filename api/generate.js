@@ -34,9 +34,17 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    // 🔥 ВРЕМЕННО — просто возвращаем весь ответ
+    // обработка ответа OpenRouter
+    if (!data.choices || !data.choices[0]) {
+      return res.status(500).json({
+        error: data
+      });
+    }
+
+    const text = data.choices[0].message.content;
+
     res.status(200).json({
-      debug: data
+      text: text
     });
 
   } catch (error) {

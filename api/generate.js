@@ -34,17 +34,9 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    // если ошибка от API
-    if (!data.choices) {
-      return res.status(500).json({
-        error: data
-      });
-    }
-
-    const text = data.choices[0].message.content;
-
+    // 🔥 ВРЕМЕННО — просто возвращаем весь ответ
     res.status(200).json({
-      text: text
+      debug: data
     });
 
   } catch (error) {

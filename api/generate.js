@@ -34,10 +34,21 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    // обработка ответа OpenRouter
-    if (!data.choices || !data.choices[0]) {
+    // 🔴 ВАЖНО: логируем ответ
+    console.log("OPENROUTER RESPONSE:", JSON.stringify(data));
+
+    // если ошибка от API
+    if (!response.ok) {
       return res.status(500).json({
         error: data
+      });
+    }
+
+    // если нет ответа модели
+    if (!data.choices || !data.choices[0]) {
+      return res.status(500).json({
+        error: "No choices in response",
+        data: data
       });
     }
 
@@ -48,6 +59,8 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
+    console.error("SERVER ERROR:", error);
+
     res.status(500).json({
       error: error.message
     });

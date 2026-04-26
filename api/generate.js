@@ -1,15 +1,18 @@
 export default async function handler(req, res) {
   const { weight, height, goal } = JSON.parse(req.body);
 
-  const response = await fetch("https://api.openai.com/v1/responses", {
-    method: "POST",
-    headers: {
-      "Authorization": "Bearer " + process.env.OPENAI_KEY,
-      "Content-Type": "application/json",
-    },
-body: JSON.stringify({
-  model: "gpt-4.1-mini",
-  input: `Составь план питания на 1 день.
+  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+  method: "POST",
+  headers: {
+    "Authorization": "Bearer " + process.env.OPENROUTER_API_KEY,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    model: "openchat/openchat-7b",
+    messages: [
+      {
+        role: "user",
+        content: `Составь план питания на 1 день.
 
 Вес: ${weight}
 Рост: ${height}
@@ -20,20 +23,28 @@ body: JSON.stringify({
 - Белки / Жиры / Углеводы
 - Меню (завтрак, обед, ужин)
 
-Без сложных блюд.`
-}),
-    }),
-  });
+Без сложных блюд.`,
+      },
+    ],
+  }),
+});
 
-  const data = await response.json();
+const textResponse = await response.text();
 
-// добавим проверку
-let text = "Ошибка генерации";
-
+let data;
 try {
-  text = data.output[0].content[0].text;
+  data = JSON.parse(textResponse);
 } catch (e) {
-  text = JSON.stringify(data);
+  return res.status(500).json({
+    error: "Не JSON ответ",
+    raw: textResponse,
+  });
 }
 
-res.status(200).json({ text });
+if (!data.choices) {
+  return res.status(500).json({ error: data });
+}
+
+res.status(200).json({
+  text: data.choices[0].message.content,
+});

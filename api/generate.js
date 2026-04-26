@@ -27,7 +27,13 @@ body: JSON.stringify({
 
   const data = await response.json();
 
-  res.status(200).json({
-    text: data.output[0].content[0].text
-  });
+// добавим проверку
+let text = "Ошибка генерации";
+
+try {
+  text = data.output[0].content[0].text;
+} catch (e) {
+  text = JSON.stringify(data);
 }
+
+res.status(200).json({ text });
